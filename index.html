@@ -2632,31 +2632,11 @@
       });
     });
 
-    // Contact form submission
-    const contactForm = document.getElementById('contactForm');
-    if (contactForm) {
-      contactForm.addEventListener('submit', e => {
-        e.preventDefault();
-        const firstName = document.getElementById('firstName').value.trim();
-        const email = document.getElementById('email').value.trim();
-        if (!firstName || !email) {
-          document.getElementById('email').focus();
-          return;
-        }
-        const btn = document.getElementById('formSubmitBtn');
-        btn.disabled = true;
-        btn.querySelector('span').textContent = '// TRANSMITTING...';
-        setTimeout(() => {
-          contactForm.reset();
-          btn.style.display = 'none';
-          document.getElementById('formSuccess').style.display = 'block';
-        }, 1200);
-      });
-    }
+    // Form submission is handled in the Firebase module below
   </script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getFirestore, collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, orderBy, query, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBUWIIcbnfioIWSwe3knk3QsXz6nWFHVj8",
@@ -2721,6 +2701,49 @@
         }
       }
       loadProjects();
+
+      // Handle Contact Form Submission
+      const contactForm = document.getElementById('contactForm');
+      if (contactForm) {
+        contactForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const firstName = document.getElementById('firstName').value.trim();
+          const lastName = document.getElementById('lastName').value.trim();
+          const email = document.getElementById('email').value.trim();
+          const company = document.getElementById('company').value.trim();
+          const service = document.getElementById('service').value.trim();
+          const details = document.getElementById('details').value.trim();
+
+          if (!firstName || !email) {
+            document.getElementById('email').focus();
+            return;
+          }
+
+          const btn = document.getElementById('formSubmitBtn');
+          btn.disabled = true;
+          btn.querySelector('span').textContent = '// TRANSMITTING...';
+
+          try {
+            await addDoc(collection(db, "contacts"), {
+              firstName,
+              lastName,
+              email,
+              company,
+              service,
+              details,
+              createdAt: serverTimestamp()
+            });
+            contactForm.reset();
+            btn.style.display = 'none';
+            document.getElementById('formSuccess').style.display = 'block';
+          } catch (err) {
+            console.error("Error submitting form: ", err);
+            btn.disabled = false;
+            btn.querySelector('span').textContent = '// LAUNCH YOUR PROJECT →';
+            alert('Something went wrong. Please try again later.');
+          }
+        });
+      }
     } else {
       grid.innerHTML = '<div style="grid-column: 1 / -1; padding: 60px; text-align: center; font-family: \'Share Tech Mono\', monospace; font-size: 14px; color: var(--copper-light); border: 1px dashed var(--border);">// SETUP REQUIRED: ADD FIREBASE CONFIG IN INDEX.HTML TO VIEW PROJECTS.</div>';
     }
