@@ -1,0 +1,17 @@
+{
+  "hosting": {
+    "site": "xtremecoders-info",
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/admin",
+        "destination": "/admin.html"
+      }
+    ]
+  }
+}

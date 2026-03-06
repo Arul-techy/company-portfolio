@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard — Xtreme Coders</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Orbitron:wght@700&family=Share+Tech+Mono&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --copper: #2563EB;
+            --copper-light: #60A5FA;
+            --copper-glow: #3B82F6;
+            --copper-dark: #1D4ED8;
+            --bg: #020817;
+            --panel: #0D1B35;
+            --border: rgba(37, 99, 235, 0.25);
+            --text: #E2E8F0;
+            --muted: #64748B;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            padding: 40px;
+        }
+
+        /* Login Screen */
+        #loginScreen {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0 20px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--copper-light);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: var(--copper);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            letter-spacing: 2px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 13px;
+        }
+
+        button:hover {
+            background: var(--copper-glow);
+        }
+
+        /* Dashboard */
+        #dashboard {
+            display: none;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h2,
+        h3 {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .project-list {
+            margin-top: 40px;
+            display: grid;
+            gap: 16px;
+        }
+
+        .project-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            padding: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .project-info h3 {
+            color: var(--copper-light);
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+        }
+
+        .project-info p {
+            color: var(--muted);
+            font-size: 15px;
+            margin-bottom: 12px;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .project-info a {
+            color: var(--copper);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .delete-btn {
+            background: #ef4444;
+            width: auto;
+            padding: 10px 20px;
+        }
+
+        .delete-btn:hover {
+            background: #dc2626;
+        }
+
+        #configWarning {
+            background: rgba(37, 99, 235, 0.1);
+            border: 1px dashed var(--copper-light);
+            padding: 20px;
+            margin-bottom: 30px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen">
+        <div class="panel">
+            <h2 style="margin-bottom: 8px; color: var(--copper-light); letter-spacing: 2px;">XTREME CODERS</h2>
+            <p
+                style="color: var(--muted); margin-bottom: 30px; font-family: 'Share Tech Mono', monospace; font-size: 12px;">
+                // ADMIN DASHBOARD AUTH</p>
+
+            <input type="password" id="passInput" placeholder="Enter Access Code...">
+            <button id="loginBtn">ACCESS CONSOLE</button>
+            <div id="loginError"
+                style="color: #ef4444; margin-top: 14px; font-size: 12px; display: none; font-family: 'Share Tech Mono', monospace;">
+                ERROR: Invalid credentials.</div>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD -->
+    <div id="dashboard">
+        <div class="header">
+            <h2 style="letter-spacing: 2px;">ADMIN <span style="color:var(--copper-light);">DASHBOARD</span></h2>
+            <button id="logoutBtn"
+                style="width: auto; padding: 8px 16px; background: transparent; border: 1px solid var(--border); color: var(--copper-light);">LOGOUT</button>
+        </div>
+
+        <div id="configWarning">
+            <h3 style="color: var(--copper-light); margin-bottom: 10px;">Firebase Setup Required</h3>
+            <p style="font-size: 15px; line-height: 1.6;">You must add your Firebase configuration object to the script
+                tags in both <strong>admin.html</strong> and <strong>index.html</strong>.<br><br>Find the <code
+                    style="color:var(--white);">firebaseConfig</code> variable in the source code and replace the
+                placeholder keys with your Firebase project details.</p>
+        </div>
+
+        <!-- START ADD PROJECT -->
+        <div class="panel" style="max-width: 100%; margin-bottom: 50px;">
+            <h3 style="margin-bottom: 24px; color: var(--copper-light); letter-spacing: 1px;">ADD NEW PROJECT</h3>
+            <form id="addProjectForm">
+                <div class="form-group">
+                    <label>Project Name</label>
+                    <input type="text" id="pName" required placeholder="e.g. Apex Streetwear Store">
+                </div>
+                <div class="form-group">
+                    <label>Tech Stack / Quick Tags</label>
+                    <input type="text" id="pDesc" required placeholder="e.g. React · Shopify · Stripe">
+                </div>
+                <div class="form-group">
+                    <label>Live URL (link)</label>
+                    <input type="url" id="pLink" placeholder="https://...">
+                </div>
+                <button type="submit" id="addBtn">+// PUBLISH TO PORTFOLIO</button>
+            </form>
+        </div>
+        <!-- END ADD PROJECT -->
+
+        <h3 style="color: var(--copper-light); letter-spacing: 1px;">LIVE PORTFOLIO DB</h3>
+        <div class="project-list" id="projectList">
+            <!-- Injected via Firebase -->
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp, orderBy, query } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // ==========================================
+        // ADD YOUR FIREBASE CONFIGURATION HERE
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyBUWIIcbnfioIWSwe3knk3QsXz6nWFHVj8",
+            authDomain: "portfolio-3730e.firebaseapp.com",
+            projectId: "portfolio-3730e",
+            storageBucket: "portfolio-3730e.firebasestorage.app",
+            messagingSenderId: "801927972800",
+            appId: "1:801927972800:web:d2394c77e43f593781aa25",
+            measurementId: "G-JCF043WT2Z"
+        };
+
+        // LOGIN AUTH (Simple Client-Side Auth)
+        const CORRECT_PASS = "coderx1100";
+        const loginScreen = document.getElementById('loginScreen');
+        const dashboard = document.getElementById('dashboard');
+
+        // Check if previously authenticated in this session
+        if (sessionStorage.getItem('xc_admin_auth') === 'true') {
+            showDashboard();
+        }
+
+        // Attempt Login
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            if (document.getElementById('passInput').value === CORRECT_PASS) {
+                sessionStorage.setItem('xc_admin_auth', 'true');
+                showDashboard();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        });
+
+        // Enter Key to Login
+        document.getElementById('passInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') document.getElementById('loginBtn').click();
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            sessionStorage.removeItem('xc_admin_auth');
+            location.reload();
+        });
+
+        // Transition to Dashboard UI
+        function showDashboard() {
+            loginScreen.style.display = 'none';
+            dashboard.style.display = 'block';
+            if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
+                fetchProjects();
+            } else {
+                document.getElementById('configWarning').style.display = 'block';
+            }
+        }
+
+        // ==========================================
+        // FIREBASE DATA OPERATIONS
+        // ==========================================
+        let db;
+        if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+        }
+
+        // Read Projects
+        async function fetchProjects() {
+            const list = document.getElementById('projectList');
+            list.innerHTML = '<div style="padding: 20px; font-family:\'Share Tech Mono\'; color:var(--muted);">// CONECTING TO FIRESTORE...</div>';
+            try {
+                const q = query(collection(db, "projects"), orderBy("createdAt", "desc"));
+                const snapshot = await getDocs(q);
+
+                if (snapshot.empty) {
+                    list.innerHTML = '<div style="padding: 20px; border: 1px dashed var(--border); color:var(--muted); font-family:\'Share Tech Mono\';">// DB IS EMPTY. ADD A PROJECT ABOVE.</div>';
+                    return;
+                }
+
+                let html = "";
+                snapshot.forEach(d => {
+                    const data = d.data();
+                    html += `
+            <div class="project-card">
+              <div class="project-info">
+                <h3>${data.name || 'Untitled'}</h3>
+                <p>${data.description || 'No description'}</p>
+                <a href="${data.link || '#'}" target="_blank">${data.link || 'No Live Link'}</a>
+              </div>
+              <button class="delete-btn" data-id="${d.id}">DELETE</button>
+            </div>
+          `;
+                });
+                list.innerHTML = html;
+
+                // Attach Delete Handlers
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        if (confirm('WARNING: Are you sure you want to permanently delete this project?')) {
+                            e.target.textContent = "DELETING...";
+                            e.target.disabled = true;
+                            await deleteDoc(doc(db, "projects", id));
+                            fetchProjects();
+                        }
+                    });
+                });
+            } catch (err) {
+                console.error(err);
+                list.innerHTML = '<div style="padding: 20px; border: 1px solid #ef4444; color:#ef4444; font-family:\'Share Tech Mono\';">// CRITICAL ERROR FETCHING FROM DB. CHECK CONSOLE.</div>';
+            }
+        }
+
+        // Write Project
+        document.getElementById('addProjectForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (firebaseConfig.apiKey === "YOUR_API_KEY") {
+                alert("Cannot write to database. Firebase config is missing.");
+                return;
+            }
+
+            const btn = document.getElementById('addBtn');
+            btn.textContent = "TRANSMITTING...";
+            btn.disabled = true;
+
+            try {
+                await addDoc(collection(db, "projects"), {
+                    name: document.getElementById('pName').value.trim(),
+                    description: document.getElementById('pDesc').value.trim(),
+                    link: document.getElementById('pLink').value.trim(),
+                    createdAt: serverTimestamp()
+                });
+                document.getElementById('addProjectForm').reset();
+                fetchProjects(); // Reload list
+            } catch (err) {
+                console.error(err);
+                alert("Failed to add project to database. See console for error log.");
+            } finally {
+                btn.textContent = "+// PUBLISH TO PORTFOLIO";
+                btn.disabled = false;
+            }
+        });
+
+    </script>
+</body>
+
+</html>
